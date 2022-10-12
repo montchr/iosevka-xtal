@@ -1,7 +1,13 @@
-{
-  lib,
-  iosevka,
-}: let
+    {lib}:
+    # https://github.com/be5invis/Iosevka/blob/master/doc/custom-build.md
+{family,spacing ? "normal",
+
+    withItalic ? true,
+    withOblique ? false,
+    weights ? ["light" "regular" "medium" "semibold" "bold" "heavy"],
+}:
+let
+
   inherit
     (lib)
     genAttrs
@@ -10,6 +16,7 @@
     optionalAttrs
     toLower
     ;
+
   fontWeightDict = {
     thin = 100;
     extraLight = 200;
@@ -24,16 +31,8 @@
   # Weight names normalised to lowercase.
   fontWeightDict' = mapAttrs' (n: v: nameValuePair (toLower n) v) fontWeightDict;
 
-  makeXtalFamily = set: family: {
-    spacing ? "normal",
-    withItalic ? true,
-    withOblique ? false,
-    weights ? ["light" "regular" "medium" "semibold" "bold" "heavy"],
-  }: (iosevka.override {
-    inherit set;
-
-    # https://github.com/be5invis/Iosevka/blob/master/doc/custom-build.md
-    privateBuildPlan = {
+in
+    {
       inherit family spacing;
       serifs = "sans";
       no-cv-ss = false;
@@ -80,9 +79,4 @@
             css = "oblique";
           };
         });
-    };
-  });
-in {
-  iosevka-xtal = makeXtalFamily "xtal" "Iosevka Xtal" {};
-  iosevka-xtal-term = makeXtalFamily "xtal-term" "Iosevka Xtal Term" {spacing = "term";};
-}
+    }

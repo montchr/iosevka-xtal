@@ -1,117 +1,17 @@
-{inputs, lib, ...}: {
-  perSystem = {
-    pkgs,
-    system,
-    config,
-    ...
-  }: {
-  #   packages = let
-  #     plan = "iosevka-normal";
-  #     upstream = (pkgs.callPackage ./generated.nix {}).iosevka;
-  #     version = lib.removePrefix "v" upstream.version;
-  #     mkZip = src: let
-  #       pname = "${src.pname}-zip";
-  #     in
-  #       pkgs.runCommand "${pname}-${version}" {
-  #         inherit pname src version;
-  #         nativeBuildInputs = [
-  #           pkgs.zip
-  #         ];
-  #       } ''
-  #         WORKDIR="$PWD"
-  #         cd $src
-  #         zip "$WORKDIR/iosevka.zip" *
-  #         cp -av "$WORKDIR/iosevka.zip" $out
-  #       '';
+{self, inputs', ...}: {
+  perSystem = ctx@{pkgs,...}:
+    let
+    inherit (pkgs) callPackages recurseIntoAttrs;
+# inherit (inputs'.napalm.legacyPackages) buildPackage;
+    in
+  {
+    packages = {
+default = ctx.config.iosevka-xtal;
 
-  #     mkLinux = src: let
-  #       pname = "${src.pname}-linux";
-  #     in
-  #       pkgs.runCommand "${pname}-${src.version}" {
-  #         inherit pname src version;
-  #       } ''
-  #         mkdir -p $out/share/fonts/truetype
-  #         cp -v $src/* $out/share/fonts/truetype
-  #       '';
-  #   in {
-  #     inherit (upstream) src;
-
-  #     default = config.packages.ttf-nerd-zip;
-
-  #     ttf = pkgs.napalm.buildPackage upstream.src {
-  #       pname = "${plan}-ttf";
-  #       inherit version;
-  #       npmCommands = [
-  #         "npm install"
-  #         "npm run build --no-update-notifier -- ttf::iosevka-normal >/dev/null"
-  #       ];
-  #       nativeBuildInputs = [
-  #         pkgs.ttfautohint
-  #       ];
-  #       postPatch = ''
-  #         cp -v ${./private-build-plans.toml} private-build-plans.toml
-  #       '';
-  #       installPhase = ''
-  #         mkdir -p $out
-  #         cp -avL dist/*/ttf/* $out
-  #       '';
-  #     };
-
-  #     ttf-nerd = pkgs.stdenvNoCC.mkDerivation {
-  #       pname = "${plan}-ttf-nerd";
-  #       inherit version;
-  #       src = config.packages.ttf;
-  #       nativeBuildInputs = [
-  #         pkgs.nerd-font-patcher
-  #       ];
-  #       buildPhase = ''
-  #         set -x
-  #         trap 'set +x' ERR
-
-  #         mkdir -p $out
-  #         for file in ./*; do
-  #           nerd-font-patcher \
-  #             --mono \
-  #             --careful \
-  #             --windows \
-  #             --complete \
-  #             --no-progressbars \
-  #             --outputdir $out \
-  #             $file &> /dev/null
-  #         done
-
-  #         set +x
-  #       '';
-  #       dontInstall = true;
-  #     };
-
-  #     ttf-zip = mkZip config.packages.ttf;
-  #     ttf-nerd-zip = mkZip config.packages.ttf-nerd;
-
-  #     ttf-linux = mkLinux config.packages.ttf;
-  #     ttf-nerd-linux = mkLinux config.packages.ttf-nerd;
-
-  #     web = pkgs.napalm.buildPackage upstream.src {
-  #       pname = "${plan}-web";
-  #       inherit version;
-  #       npmCommands = [
-  #         "npm install"
-  #         "npm run build --no-update-notifier -- webfont::iosevka-normal >/dev/null"
-  #       ];
-  #       nativeBuildInputs = [
-  #         pkgs.ttfautohint
-  #       ];
-  #       postPatch = ''
-  #         cp ${./private-build-plans.toml} private-build-plans.toml
-  #       '';
-  #       installPhase = ''
-  #         mkdir -p $out
-  #         find dist -type f -name '*.woff2' -exec cp -v '{}' $out \;
-  #         find dist -type f -name '*.css' -exec cp -v '{}' $out \;
-  #       '';
-  #     };
-
-  #     web-zip = mkZip config.packages.web;
-  #   };
+iosevka-xtal = recurseIntoAttrs (callPackages ./iosevka-xtal.nix {});
+      # upstream = (pkgs.callPackage ./generated.nix {}).iosevka;
+# iosevka-src = buildPackage ./iosevka-src.nix {inherit (ctx.config.packages) upstream; };
+# iosevka = pkgs.callPackage ./iosevka.nix {iosevka-src = ctx.config.iosevka-src;};
+    };
   };
 }

@@ -8,12 +8,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    devshell.url = "github:numtide/devshell";
-          napalm = {
-      url = "github:nix-community/napalm";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
   };
 
   outputs = {
@@ -23,15 +17,14 @@
     ...
   }: (flake-parts.lib.mkFlake {inherit self;} {
     systems = nixpkgs.lib.systems.flakeExposed;
-    imports = [
-      ./devShells
-      ./packages
-    ];
-    perSystem = {system, pkgs, ...}: let
+    perSystem = ctx@{system, pkgs, ...}: let
+      inherit (pkgs) callPackages recurseIntoAttrs;
     in {
+      packages = {
+        inherit (recurseIntoAttrs (import ./packages/iosevka-xtal.nix {inherit (pkgs) lib iosevka;})) iosevka-xtal iosevka-xtal-term;
+        default = ctx.config.packages.iosevka-xtal;
+      };
       formatter = pkgs.alejandra;
-    };
-    flake = {
     };
   });
 }
