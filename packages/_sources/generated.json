@@ -1,0 +1,21 @@
+{
+    "iosevka": {
+        "cargoLocks": null,
+        "extract": null,
+        "name": "iosevka",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "be5invis",
+            "repo": "Iosevka",
+            "rev": "v16.3.3",
+            "sha256": "sha256-AdkRlkKZunplPGXdl/UbSZi7gMHceHRXM3XDMwLMvEA=",
+            "type": "github"
+        },
+        "version": "v16.3.3"
+    }
+}
