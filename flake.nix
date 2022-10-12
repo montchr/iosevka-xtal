@@ -22,7 +22,7 @@
     in {
       packages = {
         inherit (recurseIntoAttrs (import ./packages/iosevka-xtal.nix {inherit (pkgs) lib iosevka;})) iosevka-xtal iosevka-xtal-term;
-        default = ctx.config.packages.iosevka-xtal;
+        # default = ctx.config.packages.iosevka-xtal;
       };
       formatter = pkgs.alejandra;
     };
